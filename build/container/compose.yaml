@@ -21,7 +21,7 @@
     # ──────────────────────────────────────────────────────────────────────
     # Primary application service
     # ──────────────────────────────────────────────────────────────────────
-    "bactrian": {
+    bactrian: {
       build: {
         context: "..",
         dockerfile: "build/container/Containerfile",
@@ -74,7 +74,7 @@
         "rokur-audit:/var/log/rokur",
       ],
       depends_on: {
-        "bactrian": {
+        bactrian: {
           condition: "service_healthy",
         },
       },
@@ -128,7 +128,7 @@
     },
   },
   volumes: {
-    "bactrian-data": null,
+    bactrian-data: null,
     rokur-audit: null,
   },
 }
