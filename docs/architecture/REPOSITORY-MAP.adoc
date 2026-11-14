@@ -33,10 +33,6 @@ predecessors did.
 | optional
 | CodeRabbit reads its config from the root only; pins Docstring Coverage to mode: warning (estate decision, not a vendor default). Optional: only the template and the repos whose rulesets require the CodeRabbit context carry it
 
-| `.cursorrules`
-| yes
-| -
-
 | `.devcontainer/`
 | optional
 | VS Code dev container spec; present only where the container capability is declared
@@ -84,10 +80,6 @@ predecessors did.
 | `.mailmap`
 | yes
 | git reads .mailmap from the worktree root only
-
-| `.windsurfrules`
-| yes
-| -
 
 | `CHANGELOG.adoc`
 | yes
