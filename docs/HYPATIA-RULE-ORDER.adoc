@@ -8,7 +8,7 @@
 This is the repository's statement of *which* rule layer wins when two of them
 speak about the same file, *which* clashes exist today, and *what resolves each
 one*. It is local policy about tools that live elsewhere: Hypatia at
-`hyperpolymath/hypatia@be98f74ce93df200752f3798efa1305bfa3e0e10`
+`hyperpolymath/hypatia@6693f9aed8e4383f78a3d01b600b32663bf7a45c`
 (`lib/hypatia/scanner_suppression.ex`, `lib/rules/`), and the verdict grid at
 `metadatastician/standards@f0b3cd4c464d33e1584f8528c17bce104555e256`
 (`docs/VERDICT-GRID-SPEC.adoc`).
