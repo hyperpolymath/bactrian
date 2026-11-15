@@ -87,7 +87,7 @@ unless noted.
 |===
 | Component | Grade | Posture | Evidence Summary | Promotion blocker | Last Assessed
 
-| Preflight (`scripts/bactrian/doctor.sh`) | X | not assessed | Not assessed in this file. The only project test is `tests/bactrian/doctor_test.sh`. | Not assessed | not assessed |
+| Preflight (`scripts/bactrian/doctor.sh`) | X | not assessed | Not assessed in this file. The only project test is `tests/bactrian/doctor_test.sh`. | Not assessed | not assessed
 |===
 
 *Rules of thumb for populating this table:*
