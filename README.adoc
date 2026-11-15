@@ -5,208 +5,101 @@
 :toc:
 :toc-placement: preamble
 
-// ── Licensing ───────────────────────────────────────────────────────────────
 image:https://img.shields.io/badge/Code-MPL--2.0-blue.svg?logo=mozilla[Code licence: MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
 image:https://img.shields.io/badge/Docs-CC--BY--SA--4.0-blue.svg?logo=creativecommons[Docs licence: CC-BY-SA-4.0,link="https://creativecommons.org/licenses/by-sa/4.0/"]
-image:https://img.shields.io/badge/Provenance-Quantum--Safe-blueviolet[Quantum-Safe Provenance,link="docs/legal/EXHIBIT-B-QUANTUM-SAFE.txt"]
-
-// ── Standard & quality gates ────────────────────────────────────────────────
-image:https://img.shields.io/badge/RSR-Rhodium_Standard-9C27B0[Rhodium Standard Repository,link="https://github.com/hyperpolymath/rhodium-standard-repositories"]
 image:https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/hyperpolymath/bactrian/governance-badges/badges/k9.json[K9 conformance,link="https://github.com/hyperpolymath/bactrian/actions/workflows/dogfood-gate.yml"]
 image:https://api.scorecard.dev/projects/github.com/hyperpolymath/bactrian/badge[OpenSSF Scorecard,link="https://scorecard.dev/viewer/?uri=github.com/hyperpolymath/bactrian"]
-image:https://sonarcloud.io/api/project_badges/measure?project=hyperpolymath_bactrian&metric=alert_status[SonarQube Quality Gate,link="https://sonarcloud.io/summary/new_code?id=hyperpolymath_bactrian"]
-image:https://archive.softwareheritage.org/badge/origin/https://github.com/hyperpolymath/bactrian/[Archived in Software Heritage,link="https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/hyperpolymath/bactrian"]
 
-// ── Provenance & ecosystem ──────────────────────────────────────────────────
-image:https://img.shields.io/badge/Idris-Inside-5E5086?logo=idris&logoColor=white[Idris Inside,link="https://github.com/hyperpolymath/proven"]
-image:https://img.shields.io/badge/Zig-Zero--overhead-F7A41D?logo=zig&logoColor=black[Zig Zero-overhead FFI,link="https://github.com/hyperpolymath/typed-wasm"]
-image:https://api.thegreenwebfoundation.org/greencheckimage/github.com[Green Web,link="https://www.thegreenwebfoundation.org/green-web-check/?url=github.com"]
-
-Research-stage verification suite for a pure OCaml subset, BEAM actor protocols, and Idris2/Zig FFI boundaries. Targets Why3/SMT, Apalache, and checked proof receipts. Current contents are architecture, an implementation roadmap, and fail-closed readiness tooling; the proof engine is not yet implemented.
+Bactrian is a planned verification suite for a deliberately restricted, pure
+subset of OCaml, for BEAM-style actor protocols, and for Idris2 and Zig foreign
+function boundaries. It aims to route proof obligations to Why3 with SMT
+solvers, to Apalache, and to checked proof receipts. The design is a research
+proposal.
 
 [IMPORTANT]
 ====
-*This file is a template.* You are reading `README.adoc` from the *RSR template repo*
-(or a freshly-cloned copy of it). Run `just repo-init` to replace every `{{PLACEHOLDER}}`
-token with your project's details, then delete this admonition. Until you do, the
-`{{...}}` markers below are intentional placeholders, not content.
+*Status: research stage.*
+
+* Bactrian has no proof engine.
+* The repository contains no OCaml code, no Dune project and no Why3 file.
+* The only executable is a readiness preflight. It cannot establish a proof.
+* No verification result exists. Do not read any file here as a proof.
+* Files under `verification/proofs/` and `src/interface/` are scaffold from the
+  repository template. They are not Bactrian proofs.
 ====
 
-== What this is
+== What exists today
 
-A new repository scaffolded from the *Rhodium Standard Repository (RSR)* template:
-a batteries-included starting point that ships with CI/CD, machine-readable project
-metadata, an AI-agent gatekeeper protocol, a formally-typed ABI/FFI seam
-(Idris2 + Zig), container and reproducible-build scaffolding, and governance
-infrastructure — all wired and passing the RSR validators on day one.
+* `docs/architecture/BACTRIAN-VERIFICATION-SPEC.adoc`: the architecture and
+  soundness contract.
+* `docs/architecture/BACTRIAN-IMPLEMENTATION-PLAN.adoc`: the milestones 0 to 6.
+* `docs/status/BACTRIAN-ULTRAPLAN.adoc`: work packages WP-00A to WP-09 and
+  gates G0 to G5.
+* `scripts/bactrian/doctor.sh`: the readiness preflight. It checks required
+  tools, the ECHIDNA adapter setting, the authority lock and the planned source
+  files.
+* `tests/bactrian/doctor_test.sh`: the test of the preflight.
+* `.machine_readable/bactrian/authorities.lock`: eight upstream authority rows.
+  All eight are `UNPINNED`.
 
-Replace this section with a description of *your* project once initialised.
-
-== Quick start
+== Run the preflight
 
 [source,bash]
 ----
-# 1. Create a repo from this template (or clone it), then from the repo root:
-mise trust                    # allow this repository's mise.toml (needed without a TTY)
-mise install                  # the toolchain, including the yq repo-init needs
-mise exec -- just repo-init   # interactive bootstrap: fills every {{PLACEHOLDER}}
-
-# 2. See the available tasks:
-mise exec -- just             # lists all phases (build, test, validate, audit, ...)
-
-# 3. Check the repo still satisfies the RSR shape:
-mise exec -- just validate    # structure + metadata checks
+bash scripts/bactrian/doctor.sh
+bash tests/bactrian/doctor_test.sh
 ----
 
-`mise exec --` puts the toolchain on `PATH` for that one command. Once mise is
-activated in your shell (`eval "$(mise activate bash)"`, or your shell's
-equivalent), plain `just` works and the prefix can be dropped.
+`doctor.sh` prints one line per check. It exits with status 2 and prints
+"Preflight BLOCKED" while tools or authorities are missing. This is the
+expected result today. A green exit would still not mean that anything is
+proved.
 
-`just repo-init` prompts for the project name, owner, author, licence contact, and the
-other values listed in `.machine_readable/ai/PLACEHOLDERS.adoc`, substitutes them
-across the tree, validates the result, and (if available) runs the `k9-svc` checks.
+`doctor_test.sh` tests the preflight itself. It uses synthetic fixtures. A pass
+means the preflight behaves as designed. It says nothing about Bactrian proofs.
 
-[[ai-install]]
-== AI-Assisted Installation (Recommended)
+CI runs both commands in `.github/workflows/bactrian.yml`.
 
-=== Just say it
+== Planned layers
 
-Say this to any AI assistant that can read a URL and run commands (or give you
-commands to paste):
+* *Layer A:* a sequential, pure OCaml subset. The plan uses Why3 and SMT
+  solvers, with strict Dedukti witnesses.
+* *Layer B:* actor, mailbox and protocol models. The plan uses K-CUT artifacts
+  from `choreographic-types` and Apalache bounded model checking.
+* *Layer C:* a verified foreign boundary. The plan uses an Idris2 ABI manifest
+  and a Zig implementation checked by Idris2 QTT and ZigProve.
 
-[source,text]
+None of these layers is implemented.
+
+== Plan
+
+* link:docs/architecture/BACTRIAN-VERIFICATION-SPEC.adoc[Verification specification]
+* link:docs/architecture/BACTRIAN-IMPLEMENTATION-PLAN.adoc[Implementation plan]
+* link:docs/plan/ULTRAPLAN.adoc[Plan to v1.0.0]: gates, order, models and effort
+* link:docs/status/BACTRIAN-ULTRAPLAN.adoc[Ultra-plan]
+* link:docs/status/ROADMAP.adoc[Roadmap]
+
+== Working in this repository
+
+The repository was created from the Rhodium Standard Repository template and
+keeps its tooling. The Justfile provides these recipes, among others:
+
+[source,bash]
 ----
-Create a new repository from https://github.com/hyperpolymath/bactrian
+mise trust && mise install   # install the pinned developer tools
+mise exec -- just doctor     # check the developer environment
+mise exec -- just validate   # run the template validation suite
 ----
 
-The URL is the key: it leads the assistant to
-link:docs/AI_INSTALLATION_GUIDE.adoc[`docs/AI_INSTALLATION_GUIDE.adoc`], the
-complete step-by-step recipe. The assistant checks your system, installs the
-prerequisites, instantiates the template with `just repo-init`, and verifies the
-result with `just doctor`.
-
-* "Set up bactrian so I can work on the template itself — https://github.com/hyperpolymath/bactrian"
-* `./launcher.sh --ai-setup` (or `just ai-setup`) prints the line and the guide path.
-
-=== What you will be asked
-
-. Your operating system (Linux, macOS, or Windows via WSL2).
-. The new project's name, owner, author and licence contact (the values listed in
-  `.machine_readable/ai/PLACEHOLDERS.adoc`).
-. To confirm the privacy notice below.
-
-=== Privacy and security
-
-[IMPORTANT]
-====
-Setting up bactrian clones this repository and installs its developer
-tools per-user with mise (no administrator rights, nothing sent anywhere).
-`just repo-init` rewrites files only inside the new checkout; it creates no
-remote repository and pushes nothing until you do.
-====
-
-=== Minting without a terminal
-
-Agents and CI can mint non-interactively: set `RSR_NON_INTERACTIVE=1` and pass
-the answers as environment variables named like the prompts' variables in
-`build/just/repo-init.just` (`PROJECT_NAME`, `REPO`, `OWNER`, `AUTHOR` and
-`AUTHOR_EMAIL` are required; any other answer left unset is blank or takes its
-default). Piping the answers to stdin in prompt order also works.
-
-=== Troubleshooting
-
-Run `just doctor`; each FAIL carries a code explained in
-link:docs/SETUP.adoc#troubleshooting[`docs/SETUP.adoc` §Troubleshooting], and
-`just heal` applies the automatic fixes. Prefer to do it yourself? The full
-manual route is link:docs/SETUP.adoc[`docs/SETUP.adoc`]; developers and
-maintainers can brief an AI with `just ai-warmup dev` / `just ai-warmup maintainer`.
-
-== What you get
-
-* *Machine-readable metadata* (`.machine_readable/descriptiles/`) — `STATE`, `META`,
-  `ECOSYSTEM`, `PLAYBOOK`, `AGENTIC`, `NEUROSYM`, `CLADE`, and `anchors/ANCHOR`,
-  in deed, so tools and agents can read the project's state and boundaries.
-* *AI gatekeeper protocol* — `bactrian_chora.deed` (the repo deed) is the
-  universal entry point that tells an AI agent how to work in this repo before it
-  touches anything; it carries the AI allocation policy and the ply directory tree.
-* *Typed ABI/FFI seam* — `src/interface/Abi/` (Idris2 type + layout proofs) over
-  `src/interface/ffi/` (Zig implementation), with generated C headers.
-* *CI/CD* — GitHub Actions for quality, security (CodeQL, Scorecard, secret
-  scanning), multi-forge mirroring, and RSR anti-pattern enforcement.
-* *Supply-chain & reproducibility* — container layering (stapeln), Guix shells,
-  SBOM, and signing hooks.
-* *Governance* — `GOVERNANCE.adoc`, `MAINTAINERS.adoc`, `.github/` community health
-  files, and a release `AUDIT.adoc` gate.
-
-== Governance badges
-
-The *K9 conformance* badge in the row at the top becomes live after
-`just repo-init` replaces the owner and repository placeholders in its URL
-and an eligible push to `main` publishes it. It is published by
-`.github/workflows/dogfood-gate.yml` to a generated *orphan* branch called
-`governance-badges`, and read back through the shields endpoint.
-
-[cols="1,3",options="header"]
-|===
-| Badge | What it means
-
-| green `success`
-| The K9 lane ran for that commit on `main` and passed.
-
-| red `failure`
-| The K9 lane ran for that commit on `main` and failed.
-
-| grey `skipped`, `cancelled`, `unavailable`, `unknown`
-| That commit produced *no trustworthy* K9 result. Grey is not "pending" and
-  not a stale green: a skipped, cancelled or unavailable lane replaces an
-  earlier green badge with grey.
-|===
-
-* `governance-badges` is *generated output*. It deliberately has *no common
-  ancestor with `main`*, it has no pull request, and it must *never be merged*.
-  Recent pushes to it are ordinary badge refreshes.
-* A run that would publish the same bytes makes *no commit at all*.
-* Nothing in the badge pipeline can turn a failing validation green: only a
-  lane that ran and passed, with its artifact present, renders brightgreen.
-
-The full operational contract - the exact state table, how API errors are
-classified, how concurrent publications are serialised, and how to repair a bad
-file - is in link:.github/workflows/README.adoc[`.github/workflows/README.adoc`].
-
-== Repository map
-
-The authoritative map is generated, so it cannot drift from the tree:
-link:docs/architecture/REPOSITORY-MAP.adoc[docs/architecture/REPOSITORY-MAP.adoc]
-(regenerate with `just repo-map`; CI fails if it is stale).
-
-The short version:
-
-[cols="1,3"]
-|===
-| Path | What lives there
-
-| `README.adoc`, `CLAUDE.md` | Start here - humans and AI agents respectively.
-| `src/`, `tests/`           | The code and its tests.
-| `docs/`                    | Human documentation, including the full map above.
-| `.machine_readable/`        | Manifests, contractiles and policies that tools read.
-| `build/`, `Justfile`       | Every task runs through `just`; phases live in `build/just/`.
-| `ci/`, `.github/`          | CI configuration; GitHub reads `.github/` and no other path.
-|===
-
-== Where to go next
-
-* link:docs/architecture/REPOSITORY-MAP.adoc[The repository map] — generated; what every directory is for.
-* link:docs/EXPLAINME.adoc[EXPLAINME] — the engineering deep-dive: how the pieces actually work.
-* link:docs/AFFIRMATION.adoc[AFFIRMATION] — the dated, signed honesty snapshot of the repo's true state.
-* link:docs/AUDIT.adoc[AUDIT] — the release audit gate.
-* link:docs/AI_INSTALLATION_GUIDE.adoc[AI installation guide] — for agents instantiating this template.
-* link:.machine_readable/ai/PLACEHOLDERS.adoc[PLACEHOLDERS] — the full placeholder reference.
+Template recipes such as `just readiness` are not yet wired to Bactrian. The
+repository map is generated at
+link:docs/architecture/REPOSITORY-MAP.adoc[docs/architecture/REPOSITORY-MAP.adoc].
+Contributors should read link:CONTRIBUTING.adoc[CONTRIBUTING.adoc] and
+link:CODE_OF_CONDUCT.adoc[CODE_OF_CONDUCT.adoc]. Report security issues as
+described in link:.github/SECURITY.md[.github/SECURITY.md].
 
 == Licence
 
 Code, configuration and scripts are link:LICENSE[Mozilla Public License 2.0]
-(`MPL-2.0`); prose documentation is `CC-BY-SA-4.0`. Both texts live in
-`LICENSES/`, and per-file `SPDX-License-Identifier` headers are authoritative.
-The GitHub-detected licence is MPL-2.0 (the root `LICENSE`). Long-term
-attribution uses Quantum-Safe Provenance — see
-link:docs/legal/EXHIBIT-B-QUANTUM-SAFE.txt[the Quantum-Safe Provenance exhibit].
+(`MPL-2.0`). Prose documentation is `CC-BY-SA-4.0`. Both texts live in
+`LICENSES/`. Per-file `SPDX-License-Identifier` headers are authoritative.
