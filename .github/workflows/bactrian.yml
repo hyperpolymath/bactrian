@@ -1,0 +1,46 @@
+# This workflow is managed by gh actions-lock.
+# SPDX-License-Identifier: MPL-2.0
+# bactrian.yml - runs the Bactrian readiness preflight test and checks that the
+# preflight still reports BLOCKED. It does not run any proof or verifier.
+name: Bactrian readiness
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  readiness:
+    name: Bactrian readiness gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run the preflight test
+        run: bash tests/bactrian/doctor_test.sh
+
+      - name: Require the preflight to stay blocked
+        # While the authorities are unpinned, doctor.sh must exit with status 2.
+        # This expectation must flip when WP-00 pins the authorities.
+        run: |
+          status=0
+          bash scripts/bactrian/doctor.sh || status=$?
+          if [ "$status" -ne 2 ]; then
+            echo "Expected preflight exit status 2 (BLOCKED), got $status" >&2
+            exit 1
+          fi
