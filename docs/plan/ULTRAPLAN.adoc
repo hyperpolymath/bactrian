@@ -31,8 +31,8 @@ waves W0 to W5 come from that plan.
 | ID | Item | Owner
 | B0 | WP-00A: the maintainer decides that this repository is the product repository, not a customised template. The README now describes the product. The deed still has UNASSIGNED fields. | Owner (F2)
 | B1 | The 8 upstream authorities in `.machine_readable/bactrian/authorities.lock` are UNPINNED. | Lead, WP-00
-| B2 | `mise.toml` provides Idris2 and Zig only. OCaml, Dune, Why3, Apalache, Dedukti, Coq and Lean have no pin. | Lead, WP-00, F6
-| B3 | The ECHIDNA call interface was recorded as unknown. It is known now: `echidna prove --output json`, schema `echidna.prove.result/1`. | Closed by F7
+| B2 | `mise.toml` lists Zig as `latest`, not a fixed version. Idris2 is not in it: it comes from pack. OCaml, Dune, Why3, Apalache, Dedukti, Coq and Lean have no source and no pin. | Lead, WP-00, F6
+| B3 | The ECHIDNA call interface was recorded as unknown. It is known now: `echidna prove --output json`, schema `echidna.prove.result/1`. That command checks one backend and verifies no certificate, so its result alone is not replay evidence (see "Replay" below). | Interface known; replay path open (B-2)
 |===
 
 == Definition of v1.0.0
@@ -47,7 +47,7 @@ reading.
 | Language boundary | Closed pure OCaml subset. Effects, `Obj.magic`, exceptions outside the model and unlisted externals fail closed. | An excluded construct passes the subset check.
 | Source connection | Obligations come from the typed tree of the compiled unit, bound to the compiler version and the dependency closure. | A body-only mutant keeps the old evidence.
 | Semantics | Layer A through Why3. Layer B protocol rules. Layer C ABI obligations. The trusted computing base is published. | A protocol violation or an ABI layout error is accepted.
-| Replay | Why3 or SMT results become evidence only through ECHIDNA replay. | UNKNOWN or a timeout becomes COMPLETE.
+| Replay | A Why3 or SMT result becomes evidence only after two steps: an `echidna prove` result on a pinned ECHIDNA revision, and an independent kernel check of the same proof artifact. | UNKNOWN or a timeout becomes COMPLETE. A prove result with no kernel check is recorded as replay.
 | Practical coverage | Three pilots, one for each layer. | A second project needs special cases.
 | Assurance | Mutation and vacuity checks through ECHIDNA. The preflight and the gate run in CI. | A mutant survives because a gate did not run.
 | Release and estate | Deed identity set. README, changelog and claims true. | The repository describes itself as a template.
@@ -60,7 +60,7 @@ reading.
 | Stage | Work | Lead | Size | Exit evidence
 | B-0 Truth (W0) | B0, B1, B2. WP-00A and WP-00. Pin the authorities and the tools. Flip the expected preflight status in `bactrian.yml`. | Owner for B0; Sonnet for pins | M | `doctor.sh` exits 0 on a pinned runner. Gate G0.
 | B-1 Evidence spine (W1) | Adopt the family kit (F3) and the ECHIDNA client (F7). Do not write a local receipt format. Maps to WP-01. | Sonnet from the Opus kit | S | The preflight writes its result through the kit.
-| B-2 Layer A, first obligation (W2) | One pure OCaml function: subset check, Why3 obligation, ECHIDNA replay. Maps to WP-02 to WP-05 and milestones 1 to 3. | Opus | L | The W2 family exit evidence, with the reuse measures. Gates G1 and G2.
+| B-2 Layer A, first obligation (W2) | One pure OCaml function: subset check, Why3 obligation, then replay as defined below. Maps to WP-02 to WP-05 and milestones 1 to 3. | Opus | L | The W2 family exit evidence, with the reuse measures. Gates G1 and G2.
 | B-3 Layer C through `atoma` (W3, F8) | The Idris2 and Zig FFI seam. Zig code goes to `atoma`. Maps to WP-08. | Opus | L | A layout or ownership defect is rejected.
 | B-4 Layer B after `quintessence` (W3, F9) | The actor protocol layer. Reuse the protocol rules and the Apalache model that `quintessence` builds. Add the OCaml front end only. Maps to WP-07. | Opus, advisor review | L | A protocol violation is rejected with a trace.
 | B-5 Kernel chain and release (W4, W5) | Full proof transport, WP-06 and WP-09, milestone 6. Three pilots. Release audit (F12). | Opus; Sonnet for release | XL (split first) | Gate G5 for each layer. All seven gates pass.
@@ -73,6 +73,24 @@ Start B-2 only after `atoma` or `Apodeixis.jl` closes W2 with the kit.
 Sonnet does the implementation tasks inside each stage from an Opus brief.
 Haiku runs the scout pass before each step. The advisor reviews the close of
 each stage and each change to a status word.
+
+== What "replay" means here
+
+`echidna prove` checks one backend and verifies no certificate. Its contract
+(`docs/PROVE-RESULT-CONTRACT.adoc` in ECHIDNA) says so, and its
+`trust.confidence` field is always `null` today. So a prove result alone is
+not replay evidence.
+
+In this plan, replay is the two-step pattern that `atoma` runs in
+`scripts/atoma-replay.sh`: an `echidna prove` result with the Coq backend,
+then an independent `coqchk` pass and an audit of assumptions on the same
+artifact. The receipt status stays INCOMPLETE.
+
+Before B-2 starts, the lead must record three things: the pinned ECHIDNA
+revision, the proof artifact that Why3 hands over, and the independent checker
+for it. If Why3 cannot produce an artifact that a kernel can check, B-2 exit
+evidence is a prove result only. The plan must then say so, and gates G1 and
+G2 must not call it replay.
 
 == Stop points
 
