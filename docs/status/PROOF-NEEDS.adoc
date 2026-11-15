@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: CC-BY-SA-4.0
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-// Template: rsr-template-repo/docs/status/PROOF-NEEDS.adoc
 // Authoritative master list: ~/Desktop/PROOF-REQUIREMENTS-MASTER.adoc
 = Proof Requirements — BACTRIAN
 
@@ -127,4 +126,3 @@ verification/proofs/
 * Master list: `~/Desktop/PROOF-REQUIREMENTS-MASTER.adoc`
 * Proof status tracking: `PROOF-STATUS.adoc` (this repo)
 * Proven library: `proven` repo (Idris2 verified foundations)
-* Template: `rsr-template-repo/docs/status/PROOF-NEEDS.adoc`

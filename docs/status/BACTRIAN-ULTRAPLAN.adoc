@@ -70,11 +70,13 @@ repo's declared identity and intended template/product role.
 
 The available check-run metadata identifies the failing steps but the job-log
 archive was unavailable to the workspace during this run. The recorded job
-references are link:https://github.com/hyperpolymath/Bactrian/actions/runs/39815613568/job/119953305648[Canon lockstep],
-link:https://github.com/hyperpolymath/Bactrian/actions/runs/39815613568/job/119953305493[RSR oracle],
-link:https://github.com/hyperpolymath/Bactrian/actions/runs/39815613363/job/119953304259[estate audit],
-and link:https://github.com/hyperpolymath/Bactrian/actions/runs/39815612574/job/119953301356[OpenSSF placeholder check].
+references are link:https://github.com/hyperpolymath/bactrian/actions/runs/39815613568/job/119953305648[Canon lockstep],
+link:https://github.com/hyperpolymath/bactrian/actions/runs/39815613568/job/119953305493[RSR oracle],
+link:https://github.com/hyperpolymath/bactrian/actions/runs/39815613363/job/119953304259[estate audit],
+and link:https://github.com/hyperpolymath/bactrian/actions/runs/39815612574/job/119953301356[OpenSSF placeholder check].
 Run IDs are historical evidence, not a guarantee these checks are still failing.
+
+_Note (2026-11-15):_ re-checked locally: `bash scripts/check-no-placeholders.sh .` now passes. The other three hazards were not re-checked.
 
 == Operating rules for every contributor
 

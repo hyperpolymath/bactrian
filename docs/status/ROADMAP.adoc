@@ -4,20 +4,44 @@
 
 == Current Status
 
-Initial development phase.
+Bootstrap, before any minimum viable product. The repository holds the
+architecture, the plans and a fail-closed readiness preflight. It has no Dune
+project, no OCaml code and no proof engine. No verification result exists.
+All eight authority rows in `.machine_readable/bactrian/authorities.lock` are
+`UNPINNED`.
 
-== Milestones
+Sources:
+link:../architecture/BACTRIAN-IMPLEMENTATION-PLAN.adoc[implementation plan] and
+link:BACTRIAN-ULTRAPLAN.adoc[ultra-plan]. The ultra-plan checklist controls
+what counts as done.
 
-=== v0.1.0 - Foundation
-* [ ] Core functionality
-* [ ] Basic documentation
-* [ ] CI/CD pipeline
+== Done
 
-=== v1.0.0 - Stable Release
-* [ ] Full feature set
-* [ ] Comprehensive tests
-* [ ] Production ready
+* [x] Architecture specification and soundness contract documented.
+* [x] Implementation sequence documented.
+* [x] Readiness preflight `scripts/bactrian/doctor.sh` and its test
+  `tests/bactrian/doctor_test.sh`. The preflight is not a proof check.
 
-== Future Directions
+== Milestones (implementation plan)
 
-_To be determined based on community feedback._
+* [ ] Milestone 0: pin inputs and provision the build.
+* [ ] Milestone 1: Dune skeleton and fail-closed command model.
+* [ ] Milestone 2: Layer A smallest useful proof.
+* [ ] Milestone 3: capability and TINI integration.
+* [ ] Milestone 4: Layer B protocol vertical slice.
+* [ ] Milestone 5: Layer C one primitive.
+* [ ] Milestone 6: full proof transport and release gate.
+
+== Work packages (ultra-plan)
+
+* [ ] WP-00A: reconcile repository identity and CI baseline.
+* [ ] WP-00: select target, owners and assurance boundary.
+* [ ] WP-01: pin tools, authorities and integration formats.
+* [ ] WP-02: Dune project and command/status shell.
+* [ ] WP-03: stable Core Spec IR and provenance.
+* [ ] WP-04: compiler-libs PPX firewall and typed frontend.
+* [ ] WP-05: contracts, totality, Why3 VCs and first theorem.
+* [ ] WP-06: MPR capability footprints and TINI/R5.
+* [ ] WP-07: actor protocol frontend, occupancy, K-CUT and Apalache.
+* [ ] WP-08: Idris2/QTT, ZigProve and OCaml GC ABI.
+* [ ] WP-09: ECHIDNA closure, mutations, cache and release profile.

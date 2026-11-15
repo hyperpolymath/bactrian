@@ -5,7 +5,7 @@
 *Standard:* link:https://github.com/hyperpolymath/standards/tree/main/component-readiness-grades[Component Readiness Grades (CRG) v2.0 STRICT] +
 *Assessed:* 2026-11-12 +
 *Assessor:* Jonathan D.A. Jewell +
-*Previous assessment:* _<date or "none">_
+*Previous assessment:* none
 
 *Current Grade:* X
 
@@ -65,14 +65,14 @@ Below B, any publication must be explicitly abstract or provisional.
 |===
 | Metric | Value | Source
 
-| Test count | _<N>_ | `docs/status/ROADMAP.adoc` or CI
-| Formal-verification posture | _<N `believe_me` / `sorry` / `Admitted` — irreducible only>_ | grep of proof dirs
-| Dangerous patterns (`assert_total`, `unsafeCoerce`, `Obj.magic`) | _<N>_ | grep 2026-11-12
-| Per-unit README coverage | _<M/N (percentage)>_ | filesystem scan of unit dirs
-| CI status | _<workflow name + last green run>_ | `.github/workflows/`
-| RSR mandatory workflows | _<N/17>_ | `.github/workflows/`
-| Third-party badges (if any) | _<e.g. Glama AAA; Scorecard N/10>_ | external
-| LIVE deployment (if any) | _<URL + last health check>_ | production
+| Test count | not assessed | `docs/status/ROADMAP.adoc` or CI
+| Formal-verification posture | not assessed | grep of proof dirs
+| Dangerous patterns (`assert_total`, `unsafeCoerce`, `Obj.magic`) | not assessed | grep 2026-11-12
+| Per-unit README coverage | not assessed | filesystem scan of unit dirs
+| CI status | not assessed | `.github/workflows/`
+| RSR mandatory workflows | not assessed | `.github/workflows/`
+| Third-party badges (if any) | not assessed | external
+| LIVE deployment (if any) | none | production
 |===
 
 '''
@@ -87,9 +87,7 @@ unless noted.
 |===
 | Component | Grade | Posture | Evidence Summary | Promotion blocker | Last Assessed
 
-| _<component 1>_ | X/F/E/D/C/B/A | _<shorthand>_ | _<what was checked + counts>_ | _<specific, actionable gap to next grade>_ | 2026-11-12
-| _<component 2>_ | … | … | … | … | 2026-11-12
-| _<component 3>_ | … | … | … | … | 2026-11-12
+| Preflight (`scripts/bactrian/doctor.sh`) | X | not assessed | Not assessed in this file. The only project test is `tests/bactrian/doctor_test.sh`. | Not assessed | not assessed
 |===
 
 *Rules of thumb for populating this table:*
@@ -109,8 +107,8 @@ unless noted.
 CRG v2.0 requires two new pieces of evidence on top of D:
 
 . *Active dogfooding in home context with no known home-context failures.*
-** Start date: _<date of first dogfood-log entry>_.
-** Home context: _<what "home" means for this project>_.
+** Start date: not started.
+** Home context: not assessed.
 ** "No known failures" is a moving claim — must hold continuously across
    the evidence window (recommended: 4 weeks, daily use).
 ** Populate `== Dogfooding status` in `docs/status/ROADMAP.adoc` with one entry
@@ -166,9 +164,9 @@ Real-world external feedback confirming value. Populate
 
 == 7. Summary (2026-11-12)
 
-* Project grade: _<grade>_. Why: _<1-2 line justification>_.
-* Delta since last assessment: _<what changed; none if first assessment>_.
-* Next milestone: _<specific promotion target + timeline>_.
+* Project grade: X. No grade is awarded. No component has been assessed against the CRG criteria.
+* Delta since last assessment: none (first assessment).
+* Next milestone: not assessed.
 * Machine-readable grade line present (§ header) for `just crg-grade` / `just crg-badge`.
 
 '''
