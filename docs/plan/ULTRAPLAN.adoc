@@ -32,7 +32,7 @@ waves W0 to W5 come from that plan.
 | B0 | WP-00A: the maintainer decides that this repository is the product repository, not a customised template. The README now describes the product. The deed still has UNASSIGNED fields. | Owner (F2)
 | B1 | The 8 upstream authorities in `.machine_readable/bactrian/authorities.lock` are UNPINNED. | Lead, WP-00
 | B2 | `mise.toml` lists Zig as `latest`, not a fixed version. Idris2 is not in it: it comes from pack. OCaml, Dune, Why3, Apalache, Dedukti, Coq and Lean have no source and no pin. | Lead, WP-00, F6
-| B3 | The ECHIDNA call interface was recorded as unknown. It is known now: `echidna prove --output json`, schema `echidna.prove.result/1`. That command checks one backend and verifies no certificate, so its result alone is not replay evidence (see "Replay" below). | Interface known; replay path open (B-2)
+| B3 | The ECHIDNA call interface was recorded as unknown. It is known now: `echidna prove --output json`, schema `echidna.prove.result/1`. That command checks one backend and verifies no certificate, so its result alone is not replay evidence (see "Replay" below). The preflight also probes the ECHIDNA coprocessor contract (`echidna coprocessor capabilities` and `dispatch`). The contract is in the unmerged echidna pull request 524. The probe is a hint channel and no proof evidence. Its row is optional and never changes the preflight result. | Interface known; replay path open (B-2)
 |===
 
 == Definition of v1.0.0

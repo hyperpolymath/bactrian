@@ -59,6 +59,85 @@ else
   missing 'BACTRIAN_ECHIDNA_CMD is unset (ECHIDNA CLI/API adapter is not selected)'
 fi
 
+# ECHIDNA coprocessor contract probe. OPTIONAL HINT CHANNEL: this row never
+# changes $blockers or the exit code. A blocked preflight stays blocked and a
+# present coprocessor unblocks nothing. An answer is a hint, never a proof, so
+# a result that carries "proof":true is reported as drift, never as present.
+# The contract is echidna pull request 524 (not merged when this was written).
+# Output is JCS, so exact substring checks on the single line are sound.
+cop_out=''
+cop_status=0
+# Run "$@" with a time limit when timeout exists. Set cop_out to the stdout
+# (trailing newline kept, via the sentinel) and cop_status to the exit code.
+cop_run() {
+  if command -v timeout >/dev/null 2>&1; then
+    cop_out=$(timeout 20 "$@" 2>/dev/null; printf 'x%s' "$?")
+  else
+    cop_out=$("$@" 2>/dev/null; printf 'x%s' "$?")
+  fi
+  cop_status=${cop_out##*x}
+  cop_out=${cop_out%x*}
+}
+# True when cop_out is exactly one line ending in a single newline.
+cop_one_line() {
+  local body=${cop_out%$'\n'}
+  [[ "$cop_out" == *$'\n' && -n "$body" && "$body" != *$'\n'* ]]
+}
+# Print the not-present row with reason $1.
+# [blocked] here is a report word only; it is not counted (see above).
+cop_report() {
+  printf '  [blocked] ECHIDNA coprocessor %s (optional; does not change the preflight result)\n' "$1"
+}
+# Probe the contract. Print exactly one row. Never touch $blockers.
+probe_coprocessor() {
+  local request='{"schema":"echidna.coprocessor.request/1","kind":"Math","op":{"BigIntGcd":{"a":"12","b":"18"}}}'
+  if ! command -v echidna >/dev/null 2>&1; then
+    cop_report 'unavailable: no echidna on PATH'
+    return 0
+  fi
+  cop_run echidna coprocessor capabilities
+  if [[ "$cop_status" -ne 0 && "$cop_out" != *'{'* ]]; then
+    cop_report 'unavailable: echidna has no coprocessor subcommand'
+    return 0
+  fi
+  if [[ "$cop_status" -ne 0 ]]; then
+    cop_report "failed: capabilities exited $cop_status"
+    return 0
+  fi
+  if ! cop_one_line; then
+    cop_report 'failed: capabilities did not print exactly one line'
+    return 0
+  fi
+  if [[ "$cop_out" != *'"schema":"echidna.coprocessor.capabilities/1"'* ]]; then
+    cop_report 'drift: capabilities schema is not echidna.coprocessor.capabilities/1'
+    return 0
+  fi
+  cop_run echidna coprocessor dispatch <<<"$request"
+  if [[ "$cop_status" -ne 0 ]]; then
+    cop_report "failed: dispatch exited $cop_status"
+    return 0
+  fi
+  if ! cop_one_line; then
+    cop_report 'failed: dispatch did not print exactly one line'
+    return 0
+  fi
+  if [[ "$cop_out" == *'"proof":true'* ]]; then
+    cop_report 'drift: result claims "proof":true (a hint is never a proof)'
+  elif [[ "$cop_out" != *'"schema":"echidna.coprocessor.result/1"'* ]]; then
+    cop_report 'drift: result schema is not echidna.coprocessor.result/1'
+  elif [[ "$cop_out" != *'"status":"computed"'* ]]; then
+    cop_report 'drift: result status is not computed'
+  elif [[ "$cop_out" != *'"outcome":{"BigInt":"6"}'* ]]; then
+    cop_report 'drift: gcd(12,18) outcome is not {"BigInt":"6"}'
+  elif [[ "$cop_out" != *'"proof":false'* ]]; then
+    cop_report 'drift: result lacks "proof":false'
+  else
+    printf '  [ready]   ECHIDNA coprocessor present (hint channel only; no proof status; does not change the preflight result)\n'
+  fi
+  return 0
+}
+probe_coprocessor
+
 printf '\nCanonical authority lock syntax (this does not verify artifacts):\n'
 lock="$ROOT/.machine_readable/bactrian/authorities.lock"
 if [[ ! -f "$lock" ]]; then
