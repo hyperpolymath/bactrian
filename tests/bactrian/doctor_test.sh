@@ -118,7 +118,7 @@ run_doctor 0
 
 # ECHIDNA coprocessor probe: an optional hint row that never changes the result.
 # A fake echidna comes first on PATH; the fixture tools follow it.
-ln -s "$(command -v timeout)" "$tmp/bin/timeout"
+if command -v timeout >/dev/null 2>&1; then ln -s "$(command -v timeout)" "$tmp/bin/timeout"; fi
 rm "$tmp/bin/echidna" # Each case below supplies its own fake, or none.
 caps='{"schema":"echidna.coprocessor.capabilities/1"}'
 good='{"schema":"echidna.coprocessor.result/1","status":"computed","outcome":{"BigInt":"6"},"proof":false}'
