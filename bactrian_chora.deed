@@ -126,11 +126,11 @@
   (ecosystem
     :project "bactrian"
     :ecosystem "hyperpolymath"
-    :position-type "UNASSIGNED"
-    :purpose "UNASSIGNED"
-    :not ()
-    :pipeline-position "UNASSIGNED"
-    :chain "UNASSIGNED"
+    :position-type "verification-tool"
+    :purpose "Research-stage verification suite for a pure OCaml subset, BEAM actor protocols, and Idris2/Zig FFI boundaries. Design documents and a readiness preflight exist; no proof engine exists yet."
+    :not ("a working verifier" "a general OCaml soundness certificate" "a repository template" "an ECHIDNA replacement")
+    :pipeline-position "language-verification"
+    :chain "OCaml source and contracts -> Bactrian obligations (planned) -> ECHIDNA prove and independent kernel check (planned)"
     :coordination standards
     (related :name "rsr-template-repo" :relationship minted-from :notes "the template this repo was minted from by just repo-init"))
   ; <<< repo-identity
@@ -351,7 +351,7 @@
     (identity
       :project "bactrian"
       ; language | library | service | tool
-      :kind "UNASSIGNED"
+      :kind "tool"
       :one-sentence "Research-stage verification suite for a pure OCaml subset, BEAM actor protocols, and Idris2/Zig FFI boundaries. Targets Why3/SMT, Apalache, and checked proof receipts. Current contents are architecture, an implementation roadmap, and fail-closed readiness tooling; the proof engine is not yet implemented."
       :domain "UNASSIGNED")
     (semantic-authority
