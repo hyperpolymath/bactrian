@@ -150,9 +150,13 @@ fake() {
   printf 'case "$2" in capabilities) %s;; dispatch) read -r _; %s;; *) exit 2;; esac' "$1" "$2"
 }
 require_row() { # $1 pattern that the row must match
+  grep -Fq "[optional]" <<<"$cop_row" || { printf "row lacks [optional]:\n%s\n" "$cop_row" >&2; exit 1; }
   grep -Fq -- "$1" <<<"$cop_row" || { printf 'row lacks %s:\n%s\n' "$1" "$cop_row" >&2; exit 1; }
 }
 forbid_present() {
+  if grep -Fq -e "[ready]" -e "[blocked]" <<<"$cop_row"; then
+    printf "row uses a counted marker:\n%s\n" "$cop_row" >&2; exit 1
+  fi
   if grep -q 'coprocessor present' <<<"$cop_row"; then
     printf 'must not be present:\n%s\n' "$cop_row" >&2; exit 1
   fi
@@ -180,7 +184,8 @@ same_result() { # the row must change neither the exit code nor any other line
 
 # (a) correct answers: present.
 same_result "$(fake "printf '%s\\n' '$caps'" "printf '%s\\n' '$good'")"
-require_row '[ready]'; require_row 'coprocessor present'; require_row 'no proof status'
+require_row '[optional]'; require_row 'coprocessor present'; require_row 'no proof status'
+! grep -Fq -e "[ready]" -e "[blocked]" <<<"$cop_row"
 # (b) no echidna: unavailable.
 same_result none; require_row 'unavailable: no echidna on PATH'; forbid_present
 # (c) echidna without the subcommand: unavailable, never present.

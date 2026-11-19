@@ -83,10 +83,10 @@ cop_one_line() {
   local body=${cop_out%$'\n'}
   [[ "$cop_out" == *$'\n' && -n "$body" && "$body" != *$'\n'* ]]
 }
-# Print the not-present row with reason $1.
-# [blocked] here is a report word only; it is not counted (see above).
+# Print the not-present row with reason $1. The [optional] marker is used for
+# every outcome of this row because the row is never counted as ready or blocked.
 cop_report() {
-  printf '  [blocked] ECHIDNA coprocessor %s (optional; does not change the preflight result)\n' "$1"
+  printf '  [optional] ECHIDNA coprocessor %s (optional; does not change the preflight result)\n' "$1"
 }
 # Probe the contract. Print exactly one row. Never touch $blockers.
 probe_coprocessor() {
@@ -132,7 +132,7 @@ probe_coprocessor() {
   elif [[ "$cop_out" != *'"proof":false'* ]]; then
     cop_report 'drift: result lacks "proof":false'
   else
-    printf '  [ready]   ECHIDNA coprocessor present (hint channel only; no proof status; does not change the preflight result)\n'
+    printf '  [optional] ECHIDNA coprocessor present (hint channel only; no proof status; does not change the preflight result)\n'
   fi
   return 0
 }
