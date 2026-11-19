@@ -118,7 +118,7 @@ run_doctor 0
 
 # ECHIDNA coprocessor probe: an optional hint row that never changes the result.
 # A fake echidna comes first on PATH; the fixture tools follow it.
-if command -v timeout >/dev/null 2>&1; then ln -s "$(command -v timeout)" "$tmp/bin/timeout"; fi
+real_timeout=$(command -v timeout || true) # Linked in only after the no-timeout case.
 rm "$tmp/bin/echidna" # Each case below supplies its own fake, or none.
 caps='{"schema":"echidna.coprocessor.capabilities/1"}'
 good='{"schema":"echidna.coprocessor.result/1","status":"computed","outcome":{"BigInt":"6"},"proof":false}'
@@ -181,6 +181,18 @@ same_result() { # the row must change neither the exit code nor any other line
   [[ "$cop_status" -eq "$blocked_status" && "$without_row" == "$blocked_rest" ]] || { printf 'blocked result changed:\n%s\n' "$output" >&2; exit 1; }
   run_cop "$1"
 }
+
+# No timeout tool on PATH: the probe must not run, even with a fake echidna present.
+marker="$tmp/echidna-called"
+rm -f "$marker"
+same_result "$(fake ": >\"$marker\"; printf '%s\\n' '$caps'" ": >\"$marker\"; printf '%s\\n' '$good'")"
+require_row 'unavailable: no timeout tool, probe not run'; forbid_present
+[[ ! -e "$marker" ]] || { printf 'the fake echidna was called without timeout\n' >&2; exit 1; }
+if [[ -z "$real_timeout" ]]; then
+  printf 'PASS (no timeout tool here: the timeout-dependent probe cases were skipped).\n'
+  exit 0
+fi
+ln -s "$real_timeout" "$tmp/bin/timeout"
 
 # (a) correct answers: present.
 same_result "$(fake "printf '%s\\n' '$caps'" "printf '%s\\n' '$good'")"

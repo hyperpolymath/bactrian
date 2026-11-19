@@ -64,17 +64,23 @@ fi
 # present coprocessor unblocks nothing. An answer is a hint, never a proof, so
 # a result that carries "proof":true is reported as drift, never as present.
 # The contract is echidna pull request 524 (not merged when this was written).
-# Output is JCS, so exact substring checks on the single line are sound.
+# Output is JCS, so exact substring checks on the single line are sound:
+# inside a JSON string a quote is always written backslash-quote, so the raw
+# text "proof":true or "proof":false can only be a key with its value, never
+# part of a message string. The check is fail-closed: "proof":true anywhere in
+# the line gives drift, so a result is never present with a true proof flag.
+# Limit: it does not prove the false sits under "trust" (the contract key
+# trust.proof is the key proof inside the object trust), and an additive
+# contract change can cause a false drift report on this optional row. The
+# shared client in the evidence kit will parse the JSON; this pilot stays
+# dependency-free (no jq).
+# A preflight must never hang, so the probe runs only when timeout exists.
 cop_out=''
 cop_status=0
-# Run "$@" with a time limit when timeout exists. Set cop_out to the stdout
+# Run "$@" under timeout (the caller has checked that it exists). Set cop_out to the stdout
 # (trailing newline kept, via the sentinel) and cop_status to the exit code.
 cop_run() {
-  if command -v timeout >/dev/null 2>&1; then
-    cop_out=$(timeout 20 "$@" 2>/dev/null; printf 'x%s' "$?")
-  else
-    cop_out=$("$@" 2>/dev/null; printf 'x%s' "$?")
-  fi
+  cop_out=$(timeout 20 "$@" 2>/dev/null; printf 'x%s' "$?")
   cop_status=${cop_out##*x}
   cop_out=${cop_out%x*}
 }
@@ -93,6 +99,10 @@ probe_coprocessor() {
   local request='{"schema":"echidna.coprocessor.request/1","kind":"Math","op":{"BigIntGcd":{"a":"12","b":"18"}}}'
   if ! command -v echidna >/dev/null 2>&1; then
     cop_report 'unavailable: no echidna on PATH'
+    return 0
+  fi
+  if ! command -v timeout >/dev/null 2>&1; then
+    cop_report 'unavailable: no timeout tool, probe not run'
     return 0
   fi
   cop_run echidna coprocessor capabilities
