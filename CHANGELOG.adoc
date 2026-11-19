@@ -10,6 +10,10 @@ https://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 ==== Added
 
+* `scripts/bactrian/doctor.sh` probes the ECHIDNA coprocessor contract
+  (echidna pull request 524, not merged). One optional row reports present,
+  unavailable or drift. It is a hint channel, never proof evidence, and it
+  never changes the preflight result or exit code.
 * **Chain minting: a minted repo can be minted again.** "Use this template"
   on a minted repo now mints correctly (owner ruling 2026-11-04, after the
   Codex review of #251 showed the grandchild inherited its parent's identity).
